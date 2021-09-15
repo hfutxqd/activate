@@ -1,103 +1,79 @@
-import { Icon, MessageBar, Separator, TooltipHost } from '@fluentui/react';
-import { AdbFeatures } from '@yume-chan/adb';
-import { ExternalLink } from '../components';
+import { ProgressIndicator, Separator, Dialog, PrimaryButton } from '@fluentui/react';
+import { useState } from 'react';
+
 import { withDisplayName } from '../utils';
 import { useAdbDevice } from './type';
 
-const knownFeatures: Record<string, string> = {
-    'shell_v2': `"shell" command now supports separating child process's stdout and stderr, and returning exit code`,
-    // 'cmd': '',
-    [AdbFeatures.StatV2]: '"sync" command now supports "STA2" (returns more information of a file than old "STAT") and "LST2" (returns information of a directory) sub command',
-    'ls_v2': '"sync" command now supports "LST2" sub command which returns more information when listing a directory than old "LIST"',
-    // 'fixed_push_mkdir': '',
-    // 'apex': '',
-    // 'abb': '',
-    // 'fixed_push_symlink_timestamp': '',
-    'abb_exec': 'Support "exec" command which can stream stdin into child process',
-    // 'remount_shell': '',
-    // 'track_app': '',
-    // 'sendrecv_v2': '',
-    // 'sendrecv_v2_brotli': '',
-    // 'sendrecv_v2_lz4': '',
-    // 'sendrecv_v2_zstd': '',
-    // 'sendrecv_v2_dry_run_send': '',
-};
+const shell_data = `#!/system/bin/sh
+export APK=$(pm path xyz.imxqd.clickclick| cut -c 8-)
+export CLASSPATH=$APK;
+exec nohup app_process /system/bin xyz.imxqd.adb.stf.MinitouchAgent >/dev/null 2>&1 &
+`;
 
+const sleep = function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms))
+};
 export const DeviceInfo = withDisplayName('DeviceInfo')((): JSX.Element | null => {
     const device = useAdbDevice();
+    const [activing, setActiving] = useState(false);
 
     return (
         <>
-            <MessageBar>
-                <span>ADB protocol version decides the packet format between client and server. By now it has 2 versions:</span>
-                <br />
-
-                <code>01000000</code>
-                <span> used in Android versions until 8 (Oreo)</span>
-                <br />
-
-                <code>01000001</code>
-                <span> used in Android versions from 9 (Pie)</span>
-                <br />
-
-                <span>For more information, you can check</span>
-                <ExternalLink href="https://chensi.moe/blog/2020/09/30/webadb-part2-connection/#version">my blog post</ExternalLink>
-            </MessageBar>
             <span>
-                <span>Protocol Version: </span>
+                <span>协议版本: </span>
                 <code>{device?.protocolVersion?.toString(16).padStart(8, '0')}</code>
             </span>
             <Separator />
-
-            <MessageBar>
-                <code>ro.product.name</code>
-                <span> field in Android Build Props</span>
-            </MessageBar>
-            <span>Product Name: {device?.product}</span>
+            <span>产品名称: {device?.product}</span>
             <Separator />
-
-            <MessageBar>
-                <code>ro.product.model</code>
-                <span> field in Android Build Props</span>
-            </MessageBar>
-            <span>Model Name: {device?.model}</span>
+            <span>设备型号: {device?.model}</span>
             <Separator />
-
-            <MessageBar>
-                <code>ro.product.device</code>
-                <span> field in Android Build Props</span>
-            </MessageBar>
-            <span>Device Name: {device?.device}</span>
+            <span>设备名称: {device?.device}</span>
             <Separator />
-
-            <MessageBar>
-                <span>Feature list decides how each individual commands should behavior.</span>
-                <br />
-
-                <span>For example, it may indicate the availability of a new command, </span>
-                <span>or a workaround for an old bug is not required because it's already been fixed.</span>
-                <br />
-            </MessageBar>
-            <span>
-                <span>Features: </span>
-                {device?.features?.map((feature, index) => (
-                    <span>
-                        {index !== 0 && (<span>, </span>)}
-                        <span>{feature}</span>
-                        {knownFeatures[feature] && (
-                            <TooltipHost
-                                content={
-                                    <>
-                                        <span>{knownFeatures[feature]}</span>
-                                    </>
-                                }
-                            >
-                                <Icon style={{ marginLeft: 4 }} iconName="Unknown" />
-                            </TooltipHost>
-                        )}
-                    </span>
-                ))}
-            </span>
+            <PrimaryButton disabled={!device} onClick={async ()=>{
+                
+                try {
+                    let pid = await device?.childProcess.exec('pidof', 'minitouch.agent');
+                    if (pid) {
+                        alert('服务已存在');
+                        return;
+                    }
+                    setActiving(true);
+                    const sync = await device?.sync();
+                    var buf = new ArrayBuffer(shell_data.length*2); // 2 bytes for each char
+                    var bufView = new Uint16Array(buf);
+                    for (var i=0, strLen=shell_data.length; i<strLen; i++) {
+                        bufView[i] = shell_data.charCodeAt(i);
+                    }
+                    await sync?.write('/data/local/tmp/clickclick.sh', buf, 0o0777);
+                    sync?.dispose();
+                    await device?.childProcess.exec('/data/local/tmp/clickclick.sh');
+                    await sleep(3000);
+                    alert('服务已激活');
+                } catch(e) {
+                    alert('服务激活失败!');
+                } finally {
+                    setActiving(false);
+                }
+            }}>开始激活</PrimaryButton>
+            <PrimaryButton disabled={!device} onClick={async ()=>{
+                
+                try {
+                    await device?.childProcess.exec('killall', 'minitouch.agent');
+                } catch(e) {
+                } finally {
+                    alert('服务已关闭');
+                }
+            }}>关闭服务</PrimaryButton>
+            
+            <Dialog
+                hidden={!activing}
+                dialogContentProps={{
+                    title: '正在激活...'
+                }}
+            >
+                <ProgressIndicator />
+            </Dialog>
         </>
     );
 });

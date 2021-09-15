@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom';
 import { HashRouter, Redirect, useLocation } from 'react-router-dom';
 import { AdbEventLogger, CacheRoute, CacheSwitch, Connect, ErrorDialogProvider, Logger, LoggerContextProvider, ToggleLogger } from './components';
 import './index.css';
-import { AdbDeviceProvider, DeviceInfo, FileManager, FrameBuffer, Install, Intro, Scrcpy, Shell, TcpIp } from './routes';
+import { AdbDeviceProvider, DeviceInfo, Shell } from './routes';
 
 initializeIcons();
 
@@ -56,61 +56,17 @@ function App(): JSX.Element | null {
 
     const routes = useMemo((): RouteInfo[] => [
         {
-            path: '/',
-            exact: true,
-            name: 'Introduction',
-            children: (
-                <Intro />
-            )
-        },
-        {
             path: '/device-info',
-            name: 'Device Info',
+            name: '激活服务',
             children: (
                 <DeviceInfo />
             )
         },
         {
-            path: '/adb-over-wifi',
-            name: 'ADB over WiFi',
-            children: (
-                <TcpIp />
-            )
-        },
-        {
             path: '/shell',
-            name: 'Interactive Shell',
+            name: '调试Shell',
             children: (
                 <Shell />
-            ),
-        },
-        {
-            path: '/file-manager',
-            name: 'File Manager',
-            children: (
-                <FileManager />
-            ),
-        },
-        {
-            path: '/install',
-            name: 'Install APK',
-            children: (
-                <Install />
-            ),
-        },
-        {
-            path: '/framebuffer',
-            name: 'Screen Capture',
-            children: (
-                <FrameBuffer />
-            ),
-        },
-        {
-            path: '/scrcpy',
-            name: 'Scrcpy',
-            noCache: true,
-            children: (
-                <Scrcpy />
             ),
         },
     ], [device]);
@@ -127,7 +83,7 @@ function App(): JSX.Element | null {
                     />
 
                     <StackItem grow>
-                        <div className={classNames.title}>WebADB Demo</div>
+                        <div className={classNames.title}>易按键ADB激活助手</div>
                     </StackItem>
 
                     <ToggleLogger />

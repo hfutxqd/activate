@@ -158,8 +158,8 @@ export const Connect = withDisplayName('Connect')(({
         >
             <Dropdown
                 disabled={!!device || backendOptions.length === 0}
-                label="Available devices"
-                placeholder="No available devices"
+                label="可连接设备"
+                placeholder="无可连接设备"
                 options={backendOptions}
                 styles={DropdownStyles}
                 dropdownWidth={300}
@@ -171,7 +171,7 @@ export const Connect = withDisplayName('Connect')(({
                 <Stack horizontal tokens={CommonStackTokens}>
                     <StackItem grow shrink>
                         <PrimaryButton
-                            text="Connect"
+                            text="连接设备"
                             disabled={!selectedBackend}
                             primary={!!selectedBackend}
                             styles={{ root: { width: '100%' } }}
@@ -180,10 +180,10 @@ export const Connect = withDisplayName('Connect')(({
                     </StackItem>
                     <StackItem grow shrink>
                         <TooltipHost
-                            content="WebADB can't connect to anything without your explicit permission."
+                            content="未经您的明确许可，无法连接到任何设备。"
                         >
                             <DefaultButton
-                                text="Add device"
+                                text="添加设备"
                                 disabled={!supported}
                                 primary={!selectedBackend}
                                 styles={{ root: { width: '100%' } }}
@@ -193,14 +193,14 @@ export const Connect = withDisplayName('Connect')(({
                     </StackItem>
                 </Stack>
             ) : (
-                <DefaultButton text="Disconnect" onClick={disconnect} />
+                <DefaultButton text="断开连接" onClick={disconnect} />
             )}
 
             <Dialog
                 hidden={!connecting}
                 dialogContentProps={{
-                    title: 'Connecting...',
-                    subText: 'Please authorize the connection on your device'
+                    title: '正在连接...',
+                    subText: '请运行设备上的调试许可'
                 }}
             >
                 <ProgressIndicator />
