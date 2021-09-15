@@ -39,7 +39,7 @@ export const Connect = withDisplayName('Connect')(({
     }, []);
     useEffect(() => {
         if (!supported) {
-            showErrorDialog('Your browser does not support WebUSB standard, which is required for this site to work.\n\nLatest version of Google Chrome (for Windows, macOS, Linux and Android), Microsoft Edge (for Windows and macOS), or other Chromium-based browsers should work.');
+            showErrorDialog('你的浏览器不支持WebUSB。\n\n请使用最新版本Chrome(Windows, macOS, Linux和Android), Microsoft Edge (Windows和macOS)。 其它基于Chromium的浏览器可能也能正常工作。');
             return;
         }
 
