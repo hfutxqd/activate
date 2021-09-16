@@ -122,7 +122,7 @@ function App(): JSX.Element | null {
                                     </CacheRoute>
                                 ))}
 
-                                <Redirect to="/" />
+                                <Redirect to="/device-info" />
                             </CacheSwitch>
                         </AdbDeviceProvider>
                     </StackItem>
