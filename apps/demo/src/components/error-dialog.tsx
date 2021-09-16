@@ -30,12 +30,12 @@ export const ErrorDialogProvider = withDisplayName('ErrorDialogProvider')((props
                 hidden={!errorDialogVisible}
                 dialogContentProps={{
                     type: DialogType.normal,
-                    title: 'Error',
+                    title: '发生错误',
                     subText: errorMessage,
                 }}
             >
                 <DialogFooter>
-                    <PrimaryButton text="OK" onClick={hideErrorDialog} />
+                    <PrimaryButton text="确认" onClick={hideErrorDialog} />
                 </DialogFooter>
             </Dialog>
         </ErrorDialogContext.Provider>

@@ -107,7 +107,11 @@ export const Connect = withDisplayName('Connect')(({
                 }
             }
         } catch (e: any) {
-            showErrorDialog(e.message);
+            console.error(e);
+            let message = '设备连接失败，可能是该设备已被其他程序使用!\n请尝试以下方法后再试：\n';
+            message += '1. 关闭正在使用Android Studio或者手机助手\n';
+            message += '2. 使用命令行执行 adb kill-server\n';
+            showErrorDialog(message);
         } finally {
             setConnecting(false);
         }
