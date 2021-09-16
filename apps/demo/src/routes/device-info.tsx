@@ -1,4 +1,6 @@
 import { ProgressIndicator, Separator, Dialog, PrimaryButton } from '@fluentui/react';
+import { Connect } from '../components';
+
 import { useState } from 'react';
 
 import { withDisplayName } from '../utils';

@@ -111,7 +111,7 @@ export const ToggleLogger = withDisplayName('ToggleLogger')(() => {
         <IconButton
             checked={contextValue.visible}
             iconProps={{ iconName: 'ChangeEntitlements' }}
-            title="Toggle Log"
+            title="日志记录"
             onClick={handleClick}
         />
     );

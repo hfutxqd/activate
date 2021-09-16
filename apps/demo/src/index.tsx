@@ -1,5 +1,5 @@
 import { initializeIcons } from '@fluentui/font-icons-mdl2';
-import { IconButton, mergeStyles, mergeStyleSets, Nav, Stack, StackItem } from '@fluentui/react';
+import { IconButton, mergeStyles, mergeStyleSets, Nav, Stack, StackItem, Separator } from '@fluentui/react';
 import { Adb } from '@yume-chan/adb';
 import { ReactElement, useCallback, useMemo, useState } from 'react';
 import ReactDOM from 'react-dom';
@@ -56,10 +56,18 @@ function App(): JSX.Element | null {
 
     const routes = useMemo((): RouteInfo[] => [
         {
-            path: '/device-info',
+            path: '/start',
             name: '激活服务',
             children: (
-                <DeviceInfo />
+                <AdbDeviceProvider value={device}>
+                    <Connect
+                        device={device}
+                        logger={logger.logger}
+                        onDeviceChange={setDevice}
+                    />
+                    <Separator />
+                    <DeviceInfo />
+                </AdbDeviceProvider>
             )
         },
         {
@@ -77,7 +85,7 @@ function App(): JSX.Element | null {
                 <Stack className={classNames['title-container']} horizontal verticalAlign="center">
                     <IconButton
                         checked={leftPanelVisible}
-                        title="Toggle Menu"
+                        title="菜单"
                         iconProps={{ iconName: 'GlobalNavButton' }}
                         onClick={toggleLeftPanel}
                     />
@@ -91,12 +99,6 @@ function App(): JSX.Element | null {
 
                 <Stack grow horizontal verticalFill disableShrink styles={{ root: { minHeight: 0, overflow: 'hidden', lineHeight: '1.5' } }}>
                     <StackItem className={mergeStyles(classNames['left-column'], !leftPanelVisible && { display: 'none' })}>
-                        <Connect
-                            device={device}
-                            logger={logger.logger}
-                            onDeviceChange={setDevice}
-                        />
-
                         <Nav
                             styles={{ root: {} }}
                             groups={[{
@@ -121,8 +123,7 @@ function App(): JSX.Element | null {
                                         {route.children}
                                     </CacheRoute>
                                 ))}
-
-                                <Redirect to="/device-info" />
+                                <Redirect to="/start" />
                             </CacheSwitch>
                         </AdbDeviceProvider>
                     </StackItem>
