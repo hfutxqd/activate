@@ -200,7 +200,7 @@ export const Connect = withDisplayName('Connect')(({
                 hidden={!connecting}
                 dialogContentProps={{
                     title: '正在连接...',
-                    subText: '请运行设备上的调试许可'
+                    subText: '请允许设备上的USB调试许可'
                 }}
             >
                 <ProgressIndicator />
